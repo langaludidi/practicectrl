@@ -2,16 +2,24 @@
 import { FormEvent, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+async function functionErrorMessage(error:{message:string;context?:unknown}|null,data:{error?:string}|null,fallback:string){
+  if(data?.error)return data.error;
+  if(error?.context instanceof Response){
+    try{const body=await error.context.clone().json();if(typeof body?.error==="string")return body.error;}catch{}
+  }
+  return error?.message||fallback;
+}
+
 export function BootstrapAdminForm({ tenantSlug }: { tenantSlug:string }){
   const supabase=useMemo(()=>createClient(),[]);
   const[busy,setBusy]=useState(false);const[msg,setMsg]=useState<string|null>(null);const[error,setError]=useState<string|null>(null);
   async function submit(e:FormEvent<HTMLFormElement>){
     e.preventDefault();setBusy(true);setMsg(null);setError(null);
-    const form=e.currentTarget;const fd=new FormData(form);const email=String(fd.get("email")||"");const bootstrapToken=String(fd.get("bootstrapToken")||"");const origin=window.location.origin;
+    const form=e.currentTarget;const fd=new FormData(form);const email=String(fd.get("email")||"");const bootstrapToken=String(fd.get("bootstrapToken")||"").trim();const origin=window.location.origin;
     const reg=await supabase.functions.invoke("practicectrl-bootstrap-invite",{body:{action:"register_origin",tenantSlug,bootstrapToken,origin}});
-    if(reg.error||reg.data?.error){setBusy(false);setError(reg.data?.error||reg.error?.message||"Staging origin registration failed.");return;}
+    if(reg.error||reg.data?.error){setBusy(false);setError(await functionErrorMessage(reg.error,reg.data,"Staging origin registration failed."));return;}
     const inv=await supabase.functions.invoke("practicectrl-bootstrap-invite",{body:{action:"invite",tenantSlug,email,bootstrapToken}});
-    setBusy(false);if(inv.error||inv.data?.error){setError(inv.data?.error||inv.error?.message||"Bootstrap invitation failed.");return;}
+    setBusy(false);if(inv.error||inv.data?.error){setError(await functionErrorMessage(inv.error,inv.data,"Bootstrap invitation failed."));return;}
     setMsg(inv.data.message||"First-administrator invitation sent.");form.reset();
   }
   return <form onSubmit={submit} className="mt-6 space-y-4">
