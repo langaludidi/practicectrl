@@ -50,7 +50,7 @@ jobs:
           const p = JSON.parse(fs.readFileSync('package.json', 'utf8'));
           p.version = '0.34.0-dev.1';
           p.private = true;
-          p.engines = { node: '>=22 <23' };
+          p.engines = { node: '22.x' };
           p.scripts = {
             dev: 'next dev',
             build: 'next build',
