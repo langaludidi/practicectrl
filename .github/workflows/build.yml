@@ -13,6 +13,11 @@ jobs:
     env:
       NEXT_PUBLIC_SUPABASE_URL: https://rdgkyallteuyceagoddh.supabase.co
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_wIlpKciGYF3PTyCsOIED3Q_-62Jy5Eo
+      VERCEL: "1"
+      VERCEL_ENV: production
+      VERCEL_TARGET_ENV: production
+      VERCEL_URL: practicectrl-ci.vercel.app
+      VERCEL_PROJECT_PRODUCTION_URL: practicectrl-ludidil-5352s-projects.vercel.app
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,5 +33,5 @@ jobs:
       - name: TypeScript verification
         run: npm run typecheck
 
-      - name: Production build
+      - name: Production build under Vercel environment
         run: npm run build
