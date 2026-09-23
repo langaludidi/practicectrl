@@ -33,7 +33,7 @@ export default async function EconomicsPage({searchParams}:{searchParams:Promise
   return <div className="space-y-6">
     <div className="flex flex-wrap items-end justify-between gap-4">
       <SectionHeader title="Practice Economics" body="RVU/IRU workload, expected reimbursement, realised value, payer/plan economics and revenue leakage. Every metric is derived from claim-line economics and remains drillable to source transactions."/>
-      <div className="flex flex-wrap gap-2">{WINDOWS.map(days=><Link key={days} href={`/economics?window=${days}`} className={`rounded-xl border px-3 py-2 text-xs font-medium ${windowDays===days?"border-[#4a1f3e] bg-[#4a1f3e] text-white":"border-stone-300 bg-white text-stone-700"}`}>{days===365?"12 months":`${days} days`}</Link>)}</div>
+      <div className="flex flex-wrap gap-2">{WINDOWS.map(days=><Link key={days} href={`/economics?window=${days}`} className={`rounded-xl border px-3 py-2 text-xs font-medium ${windowDays===days?"border-[#067c80] bg-[#067c80] text-white":"border-[#cfd8e3] bg-white text-[#334155]"}`}>{days===365?"12 months":`${days} days`}</Link>)}</div>
     </div>
     <PracticeEconomicsDashboard overview={(overview.data||{}) as any} scheme={(scheme.data||{}) as any} plan={(plan.data||{}) as any} procedure={(procedure.data||{}) as any} waterfall={(waterfall.data||{}) as any} productivity={(productivity.data||{}) as any}/>
     <EconomicsInvestigator practiceId={staff.practiceId} readiness={(aiReadiness.data||{}) as any}/>
