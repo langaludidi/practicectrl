@@ -185,7 +185,7 @@ export function AppShell({
                   href={item.href}
                   title={!showLabels ? item.label : undefined}
                   aria-current={active ? "page" : undefined}
-                  className={`group flex min-h-10 items-center gap-3 rounded-md border-l-2 px-2.5 py-2 text-sm transition-colors ${showLabels ? "" : "lg:justify-center lg:px-2"} ${active ? "border-[#22b8b8] bg-white/10 font-semibold text-white" : "border-transparent text-white/72 hover:bg-white/7 hover:text-white"}`}
+                  className={`group flex min-h-10 items-center gap-3 rounded-md border-l-2 px-2.5 py-2 text-sm transition-colors ${showLabels ? "" : "lg:justify-center lg:px-2"} ${active ? "border-[#22b8b8] bg-white/10 font-semibold text-white" : "border-transparent text-white/70 hover:bg-white/10 hover:text-white"}`}
                 >
                   <NavGlyph icon={item.icon} />
                   <span className={showLabels ? "truncate" : "lg:sr-only"}>{item.label}</span>
@@ -208,7 +208,7 @@ export function AppShell({
             <button
               type="button"
               onClick={() => setSidebarMode(sidebarMode === "collapsed" ? "expanded" : "collapsed")}
-              className="hidden min-h-10 items-center justify-center gap-2 rounded-md border border-white/15 px-2.5 text-xs font-semibold text-white/75 hover:bg-white/8 hover:text-white lg:flex"
+              className="hidden min-h-10 items-center justify-center gap-2 rounded-md border border-white/15 px-2.5 text-xs font-semibold text-white/75 hover:bg-white/10 hover:text-white lg:flex"
               title={sidebarMode === "collapsed" ? "Expand navigation" : "Collapse navigation"}
             >
               <ShellControlIcon type={sidebarMode === "collapsed" ? "expand" : "collapse"} />
@@ -217,7 +217,7 @@ export function AppShell({
             <button
               type="button"
               onClick={() => setSidebarMode("hidden")}
-              className="hidden min-h-10 items-center justify-center gap-2 rounded-md border border-white/15 px-2.5 text-xs font-semibold text-white/75 hover:bg-white/8 hover:text-white lg:flex"
+              className="hidden min-h-10 items-center justify-center gap-2 rounded-md border border-white/15 px-2.5 text-xs font-semibold text-white/75 hover:bg-white/10 hover:text-white lg:flex"
               title="Hide navigation for full-width work"
             >
               <ShellControlIcon type="hide" />
@@ -229,7 +229,7 @@ export function AppShell({
     </aside>
 
     <main className="min-w-0 flex-1">
-      <header className="sticky top-0 z-30 border-b border-[#dce3ea] bg-white/98">
+      <header className="sticky top-0 z-30 border-b border-[#dce3ea] bg-white">
         <div className="flex min-h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
           <button type="button" onClick={() => setMobileOpen(true)} className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[#dce3ea] text-[#051a39] lg:hidden" aria-label="Open navigation"><ShellControlIcon type="menu" /></button>
           {sidebarMode === "hidden" ? <button type="button" onClick={() => setSidebarMode("expanded")} className="hidden h-10 items-center gap-2 rounded-md border border-[#dce3ea] bg-white px-3 text-sm font-semibold text-[#051a39] hover:bg-[#f6f8fa] lg:inline-flex"><ShellControlIcon type="expand" />Navigation</button> : null}
