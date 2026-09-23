@@ -1,0 +1,32 @@
+name: PracticeCtrl Build Verification
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://rdgkyallteuyceagoddh.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_wIlpKciGYF3PTyCsOIED3Q_-62Jy5Eo
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies and unpack runtime
+        run: npm install
+
+      - name: TypeScript verification
+        run: npm run typecheck
+
+      - name: Production build
+        run: npm run build
