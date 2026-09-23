@@ -100,6 +100,7 @@ export function ReportsWorkspace({ role }: { role: StaffRole }) {
       <div className="divide-y divide-[#e5eaf0]">
         {group.reports.map(report => {
           const favourite = favorites.includes(report.id);
+          const openHref = report.detailKind ? `/reports/view/${report.id}` : report.href;
           return <div key={report.id} className="grid gap-3 px-4 py-4 lg:grid-cols-[minmax(240px,0.95fr)_minmax(320px,1.35fr)_150px_112px] lg:items-center">
             <div className="min-w-0">
               <p className="text-sm font-semibold text-[#12243b]">{report.legacyName}</p>
@@ -117,7 +118,7 @@ export function ReportsWorkspace({ role }: { role: StaffRole }) {
               >
                 <Star active={favourite} />
               </button>
-              <Link href={report.href} className="inline-flex h-9 items-center border border-[#067c80] bg-[#067c80] px-3 text-xs font-semibold text-white hover:bg-[#056b6e]">
+              <Link href={openHref} className="inline-flex h-9 items-center border border-[#067c80] bg-[#067c80] px-3 text-xs font-semibold text-white hover:bg-[#056b6e]">
                 Open
               </Link>
             </div>
