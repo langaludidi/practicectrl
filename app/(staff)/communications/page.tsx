@@ -42,9 +42,9 @@ export default async function CommunicationsPage(){
     />
     <CommunicationDraftForm practiceId={staff.practiceId} patients={(patients||[]) as any}/>
     <section>
-      <div className="mb-3"><h3 className="font-semibold text-[#4a1f3e]">Communication history</h3><p className="mt-1 text-sm text-stone-500">Manual and automated messages remain visible in one governed thread history.</p></div>
+      <div className="mb-3"><h3 className="font-semibold text-[#051a39]">Communication history</h3><p className="mt-1 text-sm text-stone-500">Manual and automated messages remain visible in one governed thread history.</p></div>
       <div className="grid gap-4 xl:grid-cols-2">{(threads||[]).map((t:any)=><article key={t.id} className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-        <div className="flex items-start justify-between gap-3"><div><p className="text-sm font-semibold text-[#4a1f3e]">{t.subject||t.thread_type}</p><p className="mt-1 text-xs text-stone-500">{t.thread_type} · last activity {shortDateTime(t.last_activity_at)}</p></div><StatusPill value={t.status}/></div>
+        <div className="flex items-start justify-between gap-3"><div><p className="text-sm font-semibold text-[#051a39]">{t.subject||t.thread_type}</p><p className="mt-1 text-xs text-stone-500">{t.thread_type} · last activity {shortDateTime(t.last_activity_at)}</p></div><StatusPill value={t.status}/></div>
         <div className="mt-4 grid gap-2">{(messages||[]).filter((m:any)=>m.thread_id===t.id).slice(0,5).map((m:any)=><div key={m.id} className="rounded-xl border border-stone-200 p-3">
           <div className="flex items-center justify-between gap-2"><p className="text-xs font-medium uppercase tracking-wide text-stone-500">{m.direction} · {m.channel}</p><StatusPill value={m.status}/></div>
           <p className="mt-1 text-xs text-stone-500">{m.recipient||"Internal"} · {shortDateTime(m.sent_at||m.created_at)}{m.contains_clinical_detail?" · clinical detail flagged":""}</p>
