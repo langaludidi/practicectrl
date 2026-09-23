@@ -10,13 +10,13 @@ export function PlatformShell({ children, role, email }: { children: React.React
       </div>
       <p className="mt-5 text-[10px] font-semibold uppercase tracking-[.15em] text-white/45">Platform operations</p>
       <h1 className="mt-1 text-lg font-semibold text-white">Tenant control plane</h1>
-      <p className="mt-2 text-xs leading-5 text-white/58">Global governance remains separate from practice-level administration.</p>
+      <p className="mt-2 text-xs leading-5 text-white/60">Global governance remains separate from practice-level administration.</p>
       <nav className="mt-6 grid gap-1">
-        <Link href="/platform/tenants" className="rounded-md border-l-2 border-transparent px-3 py-2.5 text-sm text-white/78 hover:bg-white/8 hover:text-white">Tenants</Link>
-        <Link href="/platform/sources" className="rounded-md border-l-2 border-transparent px-3 py-2.5 text-sm text-white/78 hover:bg-white/8 hover:text-white">Global source register</Link>
-        <Link href="/select-practice" className="rounded-md border-l-2 border-transparent px-3 py-2.5 text-sm text-white/78 hover:bg-white/8 hover:text-white">Practice workspace</Link>
+        <Link href="/platform/tenants" className="rounded-md border-l-2 border-transparent px-3 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white">Tenants</Link>
+        <Link href="/platform/sources" className="rounded-md border-l-2 border-transparent px-3 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white">Global source register</Link>
+        <Link href="/select-practice" className="rounded-md border-l-2 border-transparent px-3 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white">Practice workspace</Link>
       </nav>
-      <div className="mt-8 border-t border-white/10 pt-4 text-xs leading-5 text-white/58"><p className="font-semibold capitalize text-white/80">{role.replaceAll("_", " ")}</p><p className="truncate">{email ?? "Platform operator"}</p></div>
+      <div className="mt-8 border-t border-white/10 pt-4 text-xs leading-5 text-white/60"><p className="font-semibold capitalize text-white/80">{role.replaceAll("_", " ")}</p><p className="truncate">{email ?? "Platform operator"}</p></div>
     </aside>
     <main className="min-w-0">
       <header className="border-b border-[#dce3ea] bg-white px-5 py-4 lg:px-8"><p className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#64748b]">Platform operations</p><p className="mt-0.5 text-sm text-[#526276]">Tenant provisioning and global data governance only</p></header>
