@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -20,7 +20,9 @@ jobs:
       VERCEL_ENV: production
       VERCEL_TARGET_ENV: production
       VERCEL_URL: practicectrl-ci.vercel.app
-      VERCEL_PROJECT_PRODUCTION_URL: practicectrl-ludidil-5352s-projects.vercel.app\n      VERCEL_FORCE_NO_BUILD_CACHE: "1"
+      VERCEL_PROJECT_PRODUCTION_URL: practicectrl-ludidil-5352s-projects.vercel.app
+      VERCEL_FORCE_NO_BUILD_CACHE: "1"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,63 +31,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
-      - name: Install dependencies and unpack runtime
-        run: npm install
+      - name: Install exact dependencies
+        run: npm ci
 
       - name: TypeScript verification
         run: npm run typecheck
 
+      - name: Clinical regression tests
+        run: npm run test:clinical
+
       - name: Production build under Vercel environment
         run: npm run build
-
-      - name: Normalize verified source tree for Vercel
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf .practicectrl
-          node <<'NODE'
-          const fs = require('fs');
-          const p = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-          p.version = '0.34.0-dev.1';
-          p.private = true;
-          p.engines = { node: '22.x' };
-          p.scripts = {
-            dev: 'next dev',
-            build: 'next build',
-            start: 'next start',
-            typecheck: 'tsc --noEmit',
-            'test:clinical': 'vitest run integration/clinical-coding/tests',
-            'compose:sql': 'node scripts/compose-sql.mjs',
-            'verify:source': 'tsc -p tsconfig.verify.json --noEmit'
-          };
-          p.dependencies = {
-            '@supabase/ssr': '0.7.0',
-            '@supabase/supabase-js': '2.57.4',
-            next: '15.5.18',
-            react: '19.1.7',
-            'react-dom': '19.1.7'
-          };
-          p.devDependencies = {
-            '@types/node': '22.18.6',
-            '@types/react': '19.1.12',
-            '@types/react-dom': '19.1.9',
-            autoprefixer: '10.4.21',
-            postcss: '8.5.6',
-            tailwindcss: '3.4.17',
-            typescript: '5.8.3',
-            vitest: '3.2.4'
-          };
-          fs.writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n');
-          NODE
-          npm install --package-lock-only --ignore-scripts
-          git config user.name "PracticeCtrl Build Bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "Repository already normalized."
-            exit 0
-          fi
-          git commit -m "Expand PracticeCtrl v0.34 source for Vercel [skip ci]"
-          git push origin HEAD:main
