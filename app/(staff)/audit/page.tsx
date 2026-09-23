@@ -1,0 +1,2 @@
+import { EmptyState } from "@/components/EmptyState";
+export default function AuditPage(){return <div className="space-y-6"><div><h2 className="text-3xl font-semibold text-[#4a1f3e]">Audit & provenance</h2><p className="mt-1 text-stone-600">Who changed what, when, under which source version and workflow.</p></div><EmptyState title="Audit viewer pending database activation" body="Clinical coding already defines append-only audit events. This screen will expose them read-only after the target Supabase project is connected and migrations are verified."/></div>}

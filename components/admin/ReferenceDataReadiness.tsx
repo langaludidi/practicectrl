@@ -1,0 +1,27 @@
+type Release={id:string;release_name:string;version:string|null;effective_from:string|null;activated_at:string|null};
+type Sync={id:string;status:string;started_at:string;completed_at:string|null;received:number;valid:number;rejected:number;mapping_required:number};
+type Dataset={dataset_id:string;provider:string;provider_slug:string;dataset_key:string;name:string;domain:string;authority_level:string;access_model:string;licence_required:boolean;status:string;active_release:Release|null;last_sync:Sync|null};
+type Counts={schemes:number;options:number;tariff_schedules:number;tariff_rates:number};
+type OptionReadiness={benefit_year:number;options_total:number;approved:number;pending:number;edo:number;schemes_covered:number;open_schemes_covered:number;restricted_schemes_covered:number;open_schemes_total:number;restricted_schemes_total:number;source_dataset_status:string|null;source_release_status:string|null};
+
+export function ReferenceDataReadiness({data,optionData}:{data:{datasets:Dataset[];canonical_counts:Counts}|null;optionData:OptionReadiness|null}){
+  if(!data)return null;
+  const counts=data.canonical_counts||{schemes:0,options:0,tariff_schedules:0,tariff_rates:0};
+  return <section className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
+    <div className="flex flex-wrap items-start justify-between gap-3">
+      <div><p className="text-xs font-semibold uppercase tracking-[.14em] text-[#25A6A1]">Reference data control plane</p><h2 className="mt-1 text-lg font-semibold text-[#173B5E]">Canonical scheme, option and tariff readiness</h2><p className="mt-2 max-w-4xl text-sm text-stone-600">Regulatory sources establish the canonical scheme/option master. Licensed vendor data is staged, hashed and mapped before activation; a vendor code can never silently become a canonical scheme identifier.</p></div>
+      <div className="grid grid-cols-2 gap-2 text-center text-xs sm:grid-cols-4">
+        <Metric label="Schemes" value={counts.schemes}/><Metric label="Options" value={counts.options}/><Metric label="Schedules" value={counts.tariff_schedules}/><Metric label="Rates" value={counts.tariff_rates}/>
+      </div>
+    </div>
+    {optionData?<div className="mt-5 rounded-xl border border-stone-200 bg-stone-50 p-4"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[.12em] text-stone-500">2026 benefit-option master</p><p className="mt-1 text-sm font-semibold text-[#173B5E]">{optionData.options_total} source rows across {optionData.schemes_covered} of {optionData.open_schemes_total+optionData.restricted_schemes_total} schemes</p><p className="mt-1 text-xs text-stone-600">Open-scheme coverage {optionData.open_schemes_covered}/{optionData.open_schemes_total} · restricted-scheme coverage {optionData.restricted_schemes_covered}/{optionData.restricted_schemes_total}. Pending CMS decisions stay pending and cannot be treated as approved.</p></div><div className="grid grid-cols-3 gap-2 text-center text-xs"><Metric label="Approved" value={optionData.approved}/><Metric label="Pending" value={optionData.pending}/><Metric label="EDO rows" value={optionData.edo}/></div></div><p className="mt-3 text-xs text-amber-700">Governed source release: {optionData.source_release_status||"not registered"}. The restricted-scheme master is intentionally incomplete until the remaining Circular 41 rows are ingested from governed source evidence.</p></div>:null}
+    <div className="mt-5 grid gap-3 lg:grid-cols-2">
+      {(data.datasets||[]).map(d=><article key={d.dataset_id} className="rounded-xl border border-stone-200 p-4">
+        <div className="flex items-start justify-between gap-3"><div><p className="text-xs uppercase tracking-[.12em] text-stone-500">{d.provider} · {d.authority_level}</p><h3 className="mt-1 font-semibold text-[#4a1f3e]">{d.name}</h3><p className="mt-1 text-xs text-stone-500">{d.dataset_key} · {d.access_model}{d.licence_required?" · licence required":""}</p></div><span className="rounded-full bg-stone-100 px-2.5 py-1 text-xs text-stone-700">{d.status}</span></div>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2"><div className="rounded-lg bg-stone-50 p-3"><p className="text-xs font-semibold uppercase text-stone-500">Active release</p>{d.active_release?<><p className="mt-1 text-sm text-stone-800">{d.active_release.release_name}</p><p className="text-xs text-stone-500">{d.active_release.version||"version not stated"}</p></>:<p className="mt-1 text-sm text-amber-700">No governed release active</p>}</div><div className="rounded-lg bg-stone-50 p-3"><p className="text-xs font-semibold uppercase text-stone-500">Last sync</p>{d.last_sync?<><p className="mt-1 text-sm text-stone-800">{d.last_sync.status}</p><p className="text-xs text-stone-500">{d.last_sync.valid} valid · {d.last_sync.rejected} rejected · {d.last_sync.mapping_required} mapping</p></>:<p className="mt-1 text-sm text-stone-500">No sync run recorded</p>}</div></div>
+      </article>)}
+    </div>
+    <p className="mt-4 text-xs text-stone-500">Medprax reference data remains inactive until subscription/licence evidence, credentials, conformance and source-release review are complete. CMS regulatory datasets are the authority layer for registered schemes and approved benefit options.</p>
+  </section>
+}
+function Metric({label,value}:{label:string;value:number}){return <div className="rounded-lg bg-stone-50 px-3 py-2"><p className="font-semibold text-[#173B5E]">{value}</p><p className="text-stone-500">{label}</p></div>}

