@@ -20,7 +20,7 @@ jobs:
       VERCEL_ENV: production
       VERCEL_TARGET_ENV: production
       VERCEL_URL: practicectrl-ci.vercel.app
-      VERCEL_PROJECT_PRODUCTION_URL: practicectrl-ludidil-5352s-projects.vercel.app
+      VERCEL_PROJECT_PRODUCTION_URL: practicectrl-ludidil-5352s-projects.vercel.app\n      VERCEL_FORCE_NO_BUILD_CACHE: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
