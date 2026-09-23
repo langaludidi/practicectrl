@@ -12,10 +12,10 @@ export function SetPasswordForm({inviteId}:{inviteId:string}){
     if(password!==String(form.get("confirm")||"")){setBusy(false);setError("The passwords do not match.");return;}
     const supabase=createClient();
     const {data:userData,error:userError}=await supabase.auth.getUser();
-    if(userError||!userData.user){setBusy(false);setError("Open the password setup link from your email first.");return;}
+    if(userError||!userData.user){setBusy(false);setError("Verify the setup code on the account setup page first.");return;}
     const {error:updateError}=await supabase.auth.updateUser({password});
     setBusy(false);
-    if(updateError){setError("Could not set your password. Please request a fresh setup link.");return;}
+    if(updateError){setError("Could not set your password. Please request a fresh setup code.");return;}
     router.replace(inviteId?"/onboarding/accept?invite="+encodeURIComponent(inviteId):"/select-practice");
     router.refresh();
   }
