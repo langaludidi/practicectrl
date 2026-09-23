@@ -157,12 +157,12 @@ export function AppShell({
     <aside className={`fixed inset-y-0 left-0 z-50 w-[280px] overflow-hidden border-r border-white/10 bg-[#051a39] text-white transition-[width,transform] duration-200 lg:sticky lg:top-0 lg:z-40 lg:h-screen lg:translate-x-0 ${desktopWidth} ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
       <div className={`flex h-full w-[280px] flex-col overflow-y-auto transition-[width] duration-200 ${innerWidth}`}>
         <div className="border-b border-white/10 p-3">
-          <div className={`flex min-h-14 items-center rounded-lg bg-white ${showLabels ? "justify-start px-3" : "lg:justify-center lg:px-2"}`}>
+          <div className={`flex min-h-14 items-center ${showLabels ? "justify-start px-2" : "lg:justify-center"}`}>
             {showLabels ? (
-              <Image src="/brand/practicectrl-primary-logo.png" alt="PracticeCtrl" width={2048} height={682} priority className="h-9 w-auto max-w-full object-contain" />
+              <Image src="/brand/practicectrl-logo-white-on-navy.png" alt="PracticeCtrl" width={700} height={219} priority className="h-9 w-auto max-w-full object-contain object-left" />
             ) : (
-              <div className="relative h-10 w-10 overflow-hidden" title="PracticeCtrl">
-                <Image src="/brand/practicectrl-primary-logo.png" alt="PracticeCtrl" width={2048} height={682} priority className="h-10 w-auto max-w-none object-contain object-left" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-md bg-white p-1.5" title="PracticeCtrl">
+                <Image src="/brand/practicectrl-icon-full-colour.png" alt="PracticeCtrl" width={160} height={169} priority className="h-9 w-9 object-contain" />
               </div>
             )}
           </div>
