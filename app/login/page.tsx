@@ -7,9 +7,9 @@ export default function LoginPage() {
       <div>
         <p className="text-xs font-semibold uppercase tracking-[.16em] text-[#64d9d8]">PracticeCtrl</p>
         <h1 className="mt-5 max-w-lg text-3xl font-semibold leading-tight text-white lg:text-4xl">Clinical work, coding and revenue in one governed workflow.</h1>
-        <p className="mt-4 max-w-lg text-sm leading-6 text-white/68">Clinical Operations. Coding Intelligence. Revenue Integrity.</p>
+        <p className="mt-4 max-w-lg text-sm leading-6 text-white/70">Clinical Operations. Coding Intelligence. Revenue Integrity.</p>
       </div>
-      <p className="mt-10 max-w-md text-xs leading-5 text-white/55">Access is restricted to authorised practice staff. Practice, role and workflow permissions are applied after sign-in.</p>
+      <p className="mt-10 max-w-md text-xs leading-5 text-white/60">Access is restricted to authorised practice staff. Practice, role and workflow permissions are applied after sign-in.</p>
     </section>
 
     <section className="flex min-h-[calc(100vh-250px)] items-center bg-[#f6f8fa] px-5 py-10 sm:px-8 lg:min-h-screen lg:px-14">
