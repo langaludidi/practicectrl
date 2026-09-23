@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export function SignInForm() {
@@ -40,5 +41,6 @@ export function SignInForm() {
     </label>
     {error ? <p role="alert" className="rounded-md border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}</p> : null}
     <button disabled={busy} className="w-full rounded-md bg-[#067c80] px-4 py-3 font-semibold text-white hover:bg-[#056d70] disabled:cursor-not-allowed disabled:opacity-60">{busy ? "Signing in…" : "Sign in"}</button>
+    <p className="text-center text-sm"><Link href="/auth/recover" className="font-medium text-[#067c80] underline">Set or reset your password</Link></p>
   </form>;
 }
