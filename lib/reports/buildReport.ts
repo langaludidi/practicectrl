@@ -97,28 +97,34 @@ export async function buildReport(practiceId: string, report: ReportDefinition):
 
     if(report.id==="invoice-activity-schemes") invoices.sort((a,b)=>text(schemes.get(a.medical_scheme_id)).localeCompare(text(schemes.get(b.medical_scheme_id))) || String(b.invoice_date).localeCompare(String(a.invoice_date)));
 
+    const columns: ReportColumn[] = report.id==="invoice-activity-schemes" ? [
+      {key:"scheme",label:"Scheme"},{key:"plan",label:"Plan"},{key:"invoice",label:"Invoice"},{key:"date",label:"Date"},
+      {key:"status",label:"Status"},{key:"total",label:"Total",align:"right"},{key:"received",label:"Received",align:"right"},{key:"balance",label:"Balance",align:"right"}
+    ] : [
+      {key:"invoice",label:"Invoice"},{key:"date",label:"Date"},{key:"patient",label:"Patient"},{key:"kind",label:"Kind"},
+      {key:"status",label:"Status"},{key:"total",label:"Total",align:"right"},{key:"received",label:"Received",align:"right"},
+      {key:"balance",label:"Balance",align:"right"},{key:"source",label:"Source"}
+    ];
+
+    const invoiceRows: ReportRow[] = report.id==="invoice-activity-schemes"
+      ? invoices.map(row => ({
+          scheme:text(schemes.get(row.medical_scheme_id)),plan:text(options.get(row.medical_scheme_option_id)),invoice:text(row.invoice_number),
+          date:shortDate(row.invoice_date),status:text(row.status).replaceAll("_"," "),total:amount(row.total_amount),
+          received:amount(row.received_amount),balance:amount(row.balance_amount)
+        }))
+      : invoices.map(row => ({
+          invoice:text(row.invoice_number),date:shortDate(row.invoice_date),patient:text(patients.get(row.patient_id)),kind:text(row.invoice_kind),
+          status:text(row.status).replaceAll("_"," "),total:amount(row.total_amount),received:amount(row.received_amount),
+          balance:amount(row.balance_amount),source:text(row.source_system)
+        }));
+
     return {
       title: report.legacyName,
       subtitle: report.id==="outstanding-invoices"
         ? "PracticeCtrl invoices with a positive outstanding balance; void invoices are excluded."
         : "PracticeCtrl invoice activity with payer, patient, status and financial outcome retained at source transaction level.",
-      columns: report.id==="invoice-activity-schemes" ? [
-        {key:"scheme",label:"Scheme"},{key:"plan",label:"Plan"},{key:"invoice",label:"Invoice"},{key:"date",label:"Date"},
-        {key:"status",label:"Status"},{key:"total",label:"Total",align:"right"},{key:"received",label:"Received",align:"right"},{key:"balance",label:"Balance",align:"right"}
-      ] : [
-        {key:"invoice",label:"Invoice"},{key:"date",label:"Date"},{key:"patient",label:"Patient"},{key:"kind",label:"Kind"},
-        {key:"status",label:"Status"},{key:"total",label:"Total",align:"right"},{key:"received",label:"Received",align:"right"},
-        {key:"balance",label:"Balance",align:"right"},{key:"source",label:"Source"}
-      ],
-      rows: invoices.map(row => report.id==="invoice-activity-schemes" ? ({
-        scheme:text(schemes.get(row.medical_scheme_id)),plan:text(options.get(row.medical_scheme_option_id)),invoice:text(row.invoice_number),
-        date:shortDate(row.invoice_date),status:text(row.status).replaceAll("_"," "),total:amount(row.total_amount),
-        received:amount(row.received_amount),balance:amount(row.balance_amount)
-      }) : ({
-        invoice:text(row.invoice_number),date:shortDate(row.invoice_date),patient:text(patients.get(row.patient_id)),kind:text(row.invoice_kind),
-        status:text(row.status).replaceAll("_"," "),total:amount(row.total_amount),received:amount(row.received_amount),
-        balance:amount(row.balance_amount),source:text(row.source_system)
-      })),
+      columns,
+      rows: invoiceRows,
     };
   }
 
