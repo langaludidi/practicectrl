@@ -13,7 +13,7 @@ import { money, shortDate } from "@/lib/format";
 export default async function BillingPage(){
   const staff=await requireStaffContext(); if(!canViewRevenue(staff.role)) return <p className="text-sm text-stone-600">Your role does not have billing access.</p>;
   const supabase=await createClient();
-  const [{data:invoices},{data:receipts},{data:allocs},{data:patients},{data:lines},{data:practitioners},{data:validations}] = await Promise.all([
+  const [invoiceResult,receiptResult,allocationResult,patientResult,lineResult,practitionerResult,validationResult] = await Promise.all([
     supabase.from("billing_invoice").select("id,invoice_number,invoice_date,status,total_amount,received_amount,balance_amount,patient_id,source_system,medical_scheme_id,medical_scheme_option_id").eq("practice_id",staff.practiceId).order("invoice_date",{ascending:false}).limit(100),
     supabase.from("billing_payment_receipt").select("id,receipt_number,receipt_date,amount,payer_type,patient_id,source_system").eq("practice_id",staff.practiceId).order("receipt_date",{ascending:false}).limit(100),
     supabase.from("billing_payment_allocation").select("id,receipt_id,invoice_id,amount,allocation_status,allocated_at").order("allocated_at",{ascending:false}).limit(100),
@@ -22,6 +22,15 @@ export default async function BillingPage(){
     supabase.from("practitioner_profile").select("id,display_name").eq("practice_id",staff.practiceId).eq("active",true).order("display_name"),
     supabase.from("billing_validation_event").select("id,invoice_id,invoice_line_id,rule_code,severity,message,status,created_at").eq("source","payer_claim_preflight").order("created_at",{ascending:false}).limit(200),
   ]);
+  const failed = [invoiceResult,receiptResult,allocationResult,patientResult,lineResult,practitionerResult,validationResult].find(result => result.error);
+  if (failed?.error) throw new Error("The billing workspace could not load. Please try again or contact an administrator.", { cause: failed.error });
+  const { data: invoices } = invoiceResult;
+  const { data: receipts } = receiptResult;
+  const { data: allocs } = allocationResult;
+  const { data: patients } = patientResult;
+  const { data: lines } = lineResult;
+  const { data: practitioners } = practitionerResult;
+  const { data: validations } = validationResult;
   return <div className="space-y-6"><SectionHeader title="Billing" body="PracticeCtrl-created invoices and receipts are controlled transactions. Imported VeriClaim financial evidence remains in separate immutable snapshot tables."/>
     {canManageBilling(staff.role)?<BillingActions practiceId={staff.practiceId} patients={(patients||[]) as any} invoices={(invoices||[]) as any}/>:null}
     {canManageBilling(staff.role)?<AllocationPanel receipts={(receipts||[]) as any} invoices={(invoices||[]).filter((x:any)=>Number(x.balance_amount)>0) as any}/>:null}

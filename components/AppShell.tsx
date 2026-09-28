@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { canViewClinicalRecords, canViewEconomics, canViewRecovery, type StaffRole } from "@/lib/auth/roles";
+import { canViewClinicalRecords, canViewEconomics, canViewRecovery, canViewRevenue, type StaffRole } from "@/lib/auth/roles";
+import { createClient } from "@/lib/supabase/client";
 
 type SidebarMode = "expanded" | "collapsed" | "hidden";
-type NavItem = { label: string; href: string; icon: "today" | "patient" | "work" | "clinical" | "billing" | "claims" | "revenue" | "report" | "admin" };
+type NavItem = { label: string; href: string; icon: "today" | "patient" | "work" | "calendar" | "request" | "intake" | "clinical" | "pathology" | "medicines" | "documents" | "authorisation" | "communications" | "billing" | "claims" | "revenue" | "report" | "admin" | "staff" | "integrations" | "readiness" | "sources" | "modules" | "imports" | "assist" };
 type NavSection = { label: string; items: NavItem[] };
 
 function navForRole(role: StaffRole): NavSection[] {
@@ -18,24 +19,25 @@ function navForRole(role: StaffRole): NavSection[] {
         { label: "Today", href: "/dashboard", icon: "today" },
         { label: "Patients", href: "/patients", icon: "patient" },
         { label: "Operations", href: "/operations", icon: "work" },
-        { label: "Appointments", href: "/appointments", icon: "work" },
-        { label: "Requests", href: "/requests", icon: "work" },
-        { label: "Patient intake", href: "/intake", icon: "patient" },
+        { label: "Appointment handoff", href: "/appointments", icon: "calendar" },
+        { label: "Requests", href: "/requests", icon: "request" },
+        { label: "Patient intake", href: "/intake", icon: "intake" },
       ],
     },
     {
       label: "Clinical & Code10",
       items: [
         { label: "Clinical & Code10", href: "/coding", icon: "clinical" },
-        { label: "Documents & forms", href: "/documents", icon: "clinical" },
-        { label: "Authorisations", href: "/authorisations", icon: "clinical" },
+        { label: "Documents & forms", href: "/documents", icon: "documents" },
+        { label: "Authorisations", href: "/authorisations", icon: "authorisation" },
       ],
     },
     {
       label: "Practice",
       items: [
-        { label: "Communications", href: "/communications", icon: "work" },
-        { label: "Reports", href: "/analytics", icon: "report" },
+        { label: "Communications", href: "/communications", icon: "communications" },
+        { label: "Reports", href: "/reports", icon: "report" },
+        { label: "Analytics", href: "/analytics", icon: "report" },
         { label: "Audit trail", href: "/audit", icon: "report" },
       ],
     },
@@ -46,12 +48,12 @@ function navForRole(role: StaffRole): NavSection[] {
       1,
       0,
       { label: "Clinical records", href: "/clinical", icon: "clinical" },
-      { label: "Pathology", href: "/pathology", icon: "clinical" },
-      { label: "Medicines", href: "/medicines", icon: "clinical" },
+      { label: "Pathology", href: "/pathology", icon: "pathology" },
+      { label: "Medicines", href: "/medicines", icon: "medicines" },
     );
   }
 
-  if (["billing", "finance", "practice_manager", "system_admin", "auditor"].includes(role)) {
+  if (canViewRevenue(role)) {
     const revenue: NavItem[] = [
       { label: "Billing", href: "/billing", icon: "billing" },
       { label: "Claims & ERA", href: "/claims", icon: "claims" },
@@ -70,24 +72,25 @@ function navForRole(role: StaffRole): NavSection[] {
   }
 
   const adminItems: NavItem[] = [];
-  if (["billing", "finance", "practice_manager", "system_admin", "auditor"].includes(role)) {
-    adminItems.push({ label: "VeriClaim imports", href: "/admin/imports", icon: "admin" });
+  if (canViewRevenue(role)) {
+    adminItems.push({ label: "VeriClaim imports", href: "/admin/imports", icon: "imports" });
   }
   if (["practice_manager", "system_admin", "auditor"].includes(role)) {
     adminItems.push(
-      { label: "Staff & access", href: "/admin/staff", icon: "admin" },
-      { label: "Integration hub", href: "/admin/integrations", icon: "admin" },
-      { label: "Release readiness", href: "/admin/readiness", icon: "admin" },
+      { label: "Practice Configuration", href: "/admin/practice-configuration", icon: "admin" },
+      { label: "Staff & access", href: "/admin/staff", icon: "staff" },
+      { label: "Integration hub", href: "/admin/integrations", icon: "integrations" },
+      { label: "Release readiness", href: "/admin/readiness", icon: "readiness" },
     );
   }
   if (role === "system_admin") {
     adminItems.push(
-      { label: "Modules", href: "/admin/modules", icon: "admin" },
-      { label: "AI & voice governance", href: "/admin/assist", icon: "admin" },
-      { label: "Source register", href: "/admin/sources", icon: "admin" },
+      { label: "Modules", href: "/admin/modules", icon: "modules" },
+      { label: "AI & voice governance", href: "/admin/assist", icon: "assist" },
+      { label: "Source register", href: "/admin/sources", icon: "sources" },
     );
   }
-  if (adminItems.length) sections.push({ label: "Administration", items: adminItems });
+  if (adminItems.length) sections.push({ label: "System", items: adminItems });
 
   return sections;
 }
@@ -96,11 +99,26 @@ function NavGlyph({ icon }: { icon: NavItem["icon"] }) {
   const common = "h-5 w-5 shrink-0";
   if (icon === "today") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M3.5 10.5 12 3l8.5 7.5"/><path d="M5.5 9.5V21h13V9.5M9.5 21v-6h5v6"/></svg>;
   if (icon === "patient") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-4 3.2-6 7-6s6.2 2 7 6"/></svg>;
+  if (icon === "calendar") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6M17 2v6M3 10h18M8 15h3"/></svg>;
+  if (icon === "request") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M5 3h10l4 4v14H5zM15 3v5h4M8 13h8M8 17h5"/></svg>;
+  if (icon === "intake") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 2-5 6-5M17 10v10M12 15h10"/></svg>;
   if (icon === "clinical") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M9 4h6v5h5v6h-5v5H9v-5H4V9h5V4Z"/></svg>;
+  if (icon === "pathology") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M9 2v8l-5 9a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-5-9V2M7 3h10M7 16h10"/></svg>;
+  if (icon === "medicines") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="5"/><path d="M12 7v10"/></svg>;
+  if (icon === "documents") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M6 2h8l4 4v16H6zM14 2v5h4M9 12h6M9 16h6"/></svg>;
+  if (icon === "authorisation") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M12 2 20 5v6c0 6-3 9-8 11-5-2-8-5-8-11V5zM8 12l3 3 5-6"/></svg>;
+  if (icon === "communications") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="m3 7 9 7 9-7"/></svg>;
   if (icon === "billing") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>;
   if (icon === "claims") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="m9 14 2 2 4-5"/></svg>;
   if (icon === "revenue") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M4 20V8M10 20V4M16 20v-7M22 20H2"/></svg>;
   if (icon === "report") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M4 20V5h16v15H4Z"/><path d="M8 15v2M12 11v6M16 8v9"/></svg>;
+  if (icon === "staff") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M2 20c0-4 2-6 6-6s6 2 6 6M17 8h5M19.5 5.5v5"/></svg>;
+  if (icon === "integrations") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M8 4v5M16 4v5M6 9h12v3a6 6 0 0 1-6 6v3M9 21h6"/></svg>;
+  if (icon === "readiness") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/></svg>;
+  if (icon === "sources") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M4 5h16v14H4zM8 9h8M8 13h8M8 17h5"/></svg>;
+  if (icon === "modules") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>;
+  if (icon === "imports") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M12 2v12m-4-4 4 4 4-4M4 17v4h16v-4"/></svg>;
+  if (icon === "assist") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M5 5h14v10H9l-4 4zM9 9h6M9 12h4"/></svg>;
   if (icon === "admin") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg>;
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={common} aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h13"/><circle cx="18" cy="12" r="2"/></svg>;
 }
@@ -110,6 +128,35 @@ function ShellControlIcon({ type }: { type: "menu" | "collapse" | "expand" | "hi
   if (type === "collapse") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg>;
   if (type === "expand") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg>;
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg>;
+}
+
+function SignOutButton({ compact }: { compact: boolean }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(false);
+
+  async function signOut() {
+    setBusy(true);
+    setError(false);
+    try {
+      const { error: signOutError } = await createClient().auth.signOut({ scope: "local" });
+      if (signOutError) throw signOutError;
+      router.replace("/login");
+      router.refresh();
+    } catch {
+      setError(true);
+      setBusy(false);
+    }
+  }
+
+  return <div>
+    <button type="button" onClick={signOut} disabled={busy} title="Sign out" aria-label="Sign out"
+      className={`flex min-h-10 items-center rounded-md border border-white/15 px-3 text-xs font-semibold text-white/75 hover:bg-white/10 hover:text-white disabled:opacity-50 ${compact ? "lg:w-full lg:justify-center" : "gap-2"}`}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5 shrink-0" aria-hidden="true"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M15 8l4 4-4 4M8 12h11"/></svg>
+      <span className={compact ? "lg:sr-only" : ""}>{busy ? "Signing out…" : "Sign out"}</span>
+    </button>
+    {error ? <p role="alert" className="mt-2 text-xs text-rose-200">Could not sign out. Try again.</p> : null}
+  </div>;
 }
 
 export function AppShell({
@@ -204,7 +251,7 @@ export function AppShell({
               {platformRole ? <Link href="/platform/tenants" className="font-medium text-[#64d9d8] hover:text-white">Platform console</Link> : null}
             </div>
           </div> : null}
-          <div className={`flex gap-1 ${showLabels ? "justify-between" : "lg:flex-col"}`}>
+          <div className={`flex flex-wrap gap-1 ${showLabels ? "justify-between" : "lg:flex-col"}`}>
             <button
               type="button"
               onClick={() => setSidebarMode(sidebarMode === "collapsed" ? "expanded" : "collapsed")}
@@ -223,6 +270,7 @@ export function AppShell({
               <ShellControlIcon type="hide" />
               {showLabels ? <span>Hide</span> : null}
             </button>
+            <SignOutButton compact={!showLabels} />
           </div>
         </div>
       </div>
@@ -239,9 +287,9 @@ export function AppShell({
             <p className="truncate text-sm font-semibold text-[#051a39]">{practiceName}</p>
           </div>
 
-          <Link href="/patients" className="ml-auto hidden min-w-0 max-w-md flex-1 items-center gap-2 rounded-md border border-[#dce3ea] bg-[#f8fafc] px-3 py-2 text-sm text-[#5b6b7d] hover:border-[#029ea1] hover:bg-white md:flex" aria-label="Search patients and records">
+          <Link href="/patients" className="ml-auto hidden min-w-0 max-w-md flex-1 items-center gap-2 rounded-md border border-[#dce3ea] bg-[#f8fafc] px-3 py-2 text-sm text-[#5b6b7d] hover:border-[#029ea1] hover:bg-white md:flex" aria-label="Find patients">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4 shrink-0" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
-            <span className="truncate">Search patients and records</span>
+            <span className="truncate">Find patients</span>
           </Link>
 
           <Link href="/dashboard#attention" className="hidden rounded-md px-3 py-2 text-sm font-medium text-[#334155] hover:bg-[#f1f5f9] sm:inline-flex">Attention</Link>

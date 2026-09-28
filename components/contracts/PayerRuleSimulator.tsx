@@ -19,10 +19,11 @@ type Result={
   calculation_method:string|null;
   rate_percent:number|null;
   fixed_amount:number|null;
-  requirements:Array<{rule_id:string;rule_type:string;requirements:Record<string,unknown>;rule_value:Record<string,unknown>;scope:string}>;
+  requirements:Array<{rule_id:string;rule_type:string;requirements:Record<string,unknown>;rule_value:Record<string,unknown>;scope:string;version?:number;effective_from?:string;effective_to?:string|null;source_document_id?:string|null}>;
   confidence:"low"|"medium"|"high";
   source_document_id:string|null;
   effective_date:string;
+  decision_trace?:Record<string,unknown>;
 };
 
 const money=(value:number|null|undefined)=>value==null?"—":new Intl.NumberFormat("en-ZA",{style:"currency",currency:"ZAR"}).format(value);
@@ -38,7 +39,7 @@ export function PayerRuleSimulator({practiceId,schemes,options,practitioners}:{p
   async function simulate(e:FormEvent<HTMLFormElement>){
     e.preventDefault();setBusy(true);setError(null);setResult(null);
     const fd=new FormData(e.currentTarget);
-    const {data,error}=await supabase.rpc("resolve_payer_billing_rule",{
+    const {data,error}=await supabase.rpc("simulate_practice_payer_rule",{
       p_practice_id:practiceId,
       p_practitioner_id:String(fd.get("practitioner_id")||"")||null,
       p_scheme_id:String(fd.get("medical_scheme_id")||"")||null,
@@ -78,8 +79,9 @@ export function PayerRuleSimulator({practiceId,schemes,options,practitioners}:{p
       <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-sm font-semibold text-stone-900">{result.matched?"Contractual tariff rule matched":"No contractual tariff rule matched"}</p><p className="mt-1 text-xs text-stone-500">Precedence: {result.precedence_level?.replaceAll("_"," ")||"reference only"} · confidence {result.confidence}</p></div><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${result.matched?"bg-emerald-100 text-emerald-800":"bg-amber-100 text-amber-800"}`}>{result.matched?"MATCHED":"REVIEW"}</span></div>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"><ResultMetric label="Reference tariff" value={money(result.reference_amount)}/><ResultMetric label="Practice fee" value={money(result.charged_amount)}/><ResultMetric label="Expected scheme" value={money(result.expected_scheme_amount)}/><ResultMetric label="Estimated patient" value={money(result.estimated_patient_liability)}/></div>
       {result.matched?<p className="mt-3 text-xs text-stone-600">Method: {result.calculation_method?.replaceAll("_"," ")||"—"}{result.rate_percent!=null?` · ${result.rate_percent}%`:""}{result.fixed_amount!=null?` · fixed ${money(result.fixed_amount)}`:""}</p>:null}
-      {result.requirements?.length?<div className="mt-4"><p className="text-xs font-semibold uppercase tracking-wide text-stone-500">Additional applicable rules</p><div className="mt-2 grid gap-2">{result.requirements.map((r,i)=><div key={`${r.rule_id}-${i}`} className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs"><span className="font-medium text-stone-800">{r.rule_type.replaceAll("_"," ")}</span><span className="text-stone-500"> · {r.scope.replaceAll("_"," ")}</span><pre className="mt-1 overflow-x-auto whitespace-pre-wrap font-sans text-stone-500">{JSON.stringify(r.requirements&&Object.keys(r.requirements).length?r.requirements:r.rule_value,null,2)}</pre></div>)}</div></div>:null}
+      {result.requirements?.length?<div className="mt-4"><p className="text-xs font-semibold uppercase tracking-wide text-stone-500">Additional applicable rules</p><div className="mt-2 grid gap-2">{result.requirements.map((r,i)=><div key={`${r.rule_id}-${i}`} className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs"><span className="font-medium text-stone-800">{r.rule_type.replaceAll("_"," ")}</span><span className="text-stone-500"> · {r.scope.replaceAll("_"," ")} · v{r.version??"unknown"} · {r.effective_from||"date unknown"} → {r.effective_to||"open ended"}</span><pre className="mt-1 overflow-x-auto whitespace-pre-wrap font-sans text-stone-500">{JSON.stringify(r.requirements&&Object.keys(r.requirements).length?r.requirements:r.rule_value,null,2)}</pre><details className="mt-1"><summary className="cursor-pointer text-teal-800">Why?</summary><p className="mt-1 break-all text-slate-600">Rule {r.rule_id} · source {r.source_document_id||"not recorded"}</p></details></div>)}</div></div>:null}
       {result.source_document_id?<p className="mt-3 break-all text-[11px] text-stone-400">Evidence source: {result.source_document_id}</p>:null}
+      <details className="mt-4 border-t border-stone-200 pt-3 text-sm text-stone-700"><summary className="cursor-pointer font-semibold text-teal-800">Why? Inspect rule provenance</summary><p className="mt-2 text-xs">This result uses the rules effective on the service date. A missing match requires human review. Simulated expectations do not confirm live benefits or permission to balance bill.</p><dl className="mt-2 grid gap-1 text-xs sm:grid-cols-2">{Object.entries(result.decision_trace||{}).map(([key,value])=><div key={key}><dt className="inline font-semibold">{key.replaceAll("_"," ")}: </dt><dd className="inline break-all">{value==null?"Not recorded":String(value)}</dd></div>)}</dl></details>
     </div>:null}
   </section>;
 }

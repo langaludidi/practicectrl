@@ -1,0 +1,818 @@
+{
+  "source_project": "rdgkyallteuyceagoddh",
+  "retrieved_on": "2026-09-24",
+  "statement_count": 162,
+  "sha": "Postgres md5 of concatenated statement text after trailing whitespace removal",
+  "migrations": [
+    {
+      "version": "20260920200327",
+      "name": "crm_core_schema",
+      "digest": "9f450369c3ebb0d5ea6851ffe621dfb7"
+    },
+    {
+      "version": "20260920200400",
+      "name": "clinical_coding_phase1",
+      "digest": "d29008dede6ba12a6479a1c818feefcc"
+    },
+    {
+      "version": "20260920200417",
+      "name": "clinical_coding_phase2_rules",
+      "digest": "9270d15f2723a052def5d37440fe6d21"
+    },
+    {
+      "version": "20260920200437",
+      "name": "clinical_coding_phase3_pmb",
+      "digest": "eee8f88c872faff901c7fbac9ed17fcc"
+    },
+    {
+      "version": "20260920200504",
+      "name": "clinical_coding_phase5_ai_governance",
+      "digest": "b4542dc58ac622cf61829cf86162abfe"
+    },
+    {
+      "version": "20260920200538",
+      "name": "clinical_coding_phase6_workflow",
+      "digest": "11d0ec1753f6faa64267b8b65c18a2e8"
+    },
+    {
+      "version": "20260920200637",
+      "name": "security_performance_hardening_v1",
+      "digest": "e28426a582d95df0c248d87ef42995b8"
+    },
+    {
+      "version": "20260920201208",
+      "name": "clinical_mfa_aal2_hardening_v1",
+      "digest": "d28614318bbd712fd7e57dce2dd68ec9"
+    },
+    {
+      "version": "20260920201715",
+      "name": "coding_source_storage_policies_v1",
+      "digest": "0d2b61cb80f86d786df00595dceea608"
+    },
+    {
+      "version": "20260920201756",
+      "name": "coding_source_file_provenance_v1",
+      "digest": "fa93b247a164491a84c68653768aa0c3"
+    },
+    {
+      "version": "20260920201840",
+      "name": "rls_initplan_optimization_v1",
+      "digest": "bf19abfe2fd89df4384bab71ccdef3cd"
+    },
+    {
+      "version": "20260920204207",
+      "name": "practicectrl_integration_fabric_v1",
+      "digest": "3c53c5213b33a910e428aa51d2a23ca0"
+    },
+    {
+      "version": "20260920204328",
+      "name": "practicectrl_integration_registry_seed_v1",
+      "digest": "17d2609614c1e3a2f74c3f8aaffd1d19"
+    },
+    {
+      "version": "20260920204520",
+      "name": "practicectrl_payer_registry_v1",
+      "digest": "d6b2d80a5fe84092fea4a93ab06dfd77"
+    },
+    {
+      "version": "20260920204714",
+      "name": "practicectrl_billing_claims_era_spine_v1",
+      "digest": "5e62bdbed3561c67af1fe1772416d468"
+    },
+    {
+      "version": "20260920204807",
+      "name": "practicectrl_fk_index_hardening_v1",
+      "digest": "507b75c13163d7764aadc2c86183772c"
+    },
+    {
+      "version": "20260920204821",
+      "name": "practicectrl_fk_index_completion_v1",
+      "digest": "8d1f826bb5cbd878233b39aeffbea361"
+    },
+    {
+      "version": "20260920205005",
+      "name": "medikredit_interface_detail_v2",
+      "digest": "08f0abce6d666eb158b6dcc8b212e6a1"
+    },
+    {
+      "version": "20260920205025",
+      "name": "practicectrl_integration_contacts_v1",
+      "digest": "dc36b41e653a5397f73ee9d0ebc2bd90"
+    },
+    {
+      "version": "20260920210214",
+      "name": "practicectrl_seed_reconciliation_v1",
+      "digest": "47efbba738558b4222c0708a0a1f9dce"
+    },
+    {
+      "version": "20260920210818",
+      "name": "integration_outreach_tracking_v1",
+      "digest": "12da31819c43947afed9421e6d690b3f"
+    },
+    {
+      "version": "20260920211207",
+      "name": "integration_adapter_readiness_v1",
+      "digest": "29ae9a6fad58c5ca4aa4c847d8a9c46b"
+    },
+    {
+      "version": "20260920211403",
+      "name": "integration_adapter_readiness_index_v1",
+      "digest": "a556e95641100a496ac9eb7d09ece3a3"
+    },
+    {
+      "version": "20260920213113",
+      "name": "transaction_orchestration_foundation_v1",
+      "digest": "817bf19a389dcea68171fc3833686324"
+    },
+    {
+      "version": "20260920213510",
+      "name": "transaction_orchestration_fk_indexes_v1",
+      "digest": "43c6387cba4a26c94f3b67d0f1fad9e2"
+    },
+    {
+      "version": "20260920213652",
+      "name": "sandbox_retry_tuning_v1",
+      "digest": "292fd8298e0f634968ddb9a5ccd63332"
+    },
+    {
+      "version": "20260920214242",
+      "name": "governed_source_ingestion_foundation_v1",
+      "digest": "1fc6af29ac73052896b7e528b65160e7"
+    },
+    {
+      "version": "20260920214602",
+      "name": "ndoh_mit_guarded_activation_v1",
+      "digest": "c6f75e469ec44c170a81b16e7e7e6b1f"
+    },
+    {
+      "version": "20260920214810",
+      "name": "governed_source_ingestion_hardening_v1",
+      "digest": "43a8fcef2019f4a41d9aadc81fe62861"
+    },
+    {
+      "version": "20260920214832",
+      "name": "governed_source_server_write_v1",
+      "digest": "16de331c78e05fa40d1508d5b5877d67"
+    },
+    {
+      "version": "20260920215418",
+      "name": "code10_advanced_experience_v1",
+      "digest": "f7f5bd1af0ddd20202b71296e42e50de"
+    },
+    {
+      "version": "20260920215535",
+      "name": "code10_pmb_batch_lookup_v1",
+      "digest": "22a9072d6a25f685630cf80056f463cc"
+    },
+    {
+      "version": "20260920220227",
+      "name": "code10_ai_provider_governance_v1",
+      "digest": "8365e1c12dd657f032ce3e1d20f01081"
+    },
+    {
+      "version": "20260920220302",
+      "name": "code10_ai_transport_gate_v1",
+      "digest": "b14ccb420f2bc8880b416098ec07904b"
+    },
+    {
+      "version": "20260920221203",
+      "name": "code10_enrichment_foundation_v1",
+      "digest": "3b6ab10d52996a71f6bfe89189cd9dac"
+    },
+    {
+      "version": "20260920222256",
+      "name": "practicectrl_ai_voice_fabric_v1",
+      "digest": "010e6bbe00f9185edcedcd7d895c2437"
+    },
+    {
+      "version": "20260920222725",
+      "name": "assist_fk_indexes_v1",
+      "digest": "485f3bfd380cae3f7a8bc79779f01536"
+    },
+    {
+      "version": "20260920223337",
+      "name": "secure_staff_onboarding_v1",
+      "digest": "352e257fb8ba23957dd57ddb121b7b4d"
+    },
+    {
+      "version": "20260920223600",
+      "name": "onboarding_rls_initplan_v1",
+      "digest": "bac859c27eca6fe49e46048687610636"
+    },
+    {
+      "version": "20260920223647",
+      "name": "staff_invitation_atomic_accept_v1",
+      "digest": "0b61cf502ce4827d1f95247bf5ee88a8"
+    },
+    {
+      "version": "20260920224320",
+      "name": "edge_onboarding_support_v1",
+      "digest": "d5e1f3ec682fa9148d8c45af2c7797e4"
+    },
+    {
+      "version": "20260920224754",
+      "name": "edge_onboarding_hardening_v1",
+      "digest": "c6a44c80d9fa2610ca5914244adfdfec"
+    },
+    {
+      "version": "20260920224853",
+      "name": "staff_directory_edge_read_v1",
+      "digest": "21e5f2390da037feea5068012e5f3d9d"
+    },
+    {
+      "version": "20260920225839",
+      "name": "practicectrl_crm_module_v1",
+      "digest": "98a653fe7ea276326e3e347c85698ae5"
+    },
+    {
+      "version": "20260920225909",
+      "name": "practicectrl_vericlaim_revenue_import_v1",
+      "digest": "47390312e9ffa79eb6c8574e1fc39713"
+    },
+    {
+      "version": "20260920225931",
+      "name": "practicectrl_billing_payments_v1",
+      "digest": "c7823d5401074ed0ef50856a38ac7084"
+    },
+    {
+      "version": "20260920230047",
+      "name": "practicectrl_communications_operations_analytics_v1",
+      "digest": "947f47be93a5a00af73f32ff55d11c31"
+    },
+    {
+      "version": "20260920230207",
+      "name": "billing_atomic_draft_invoice_v1",
+      "digest": "ba725c507111497c876c532ed71647d7"
+    },
+    {
+      "version": "20260920230633",
+      "name": "module_rls_performance_hardening_v1",
+      "digest": "973d5db083eda9b52549d1b8d0071763"
+    },
+    {
+      "version": "20260920231254",
+      "name": "cross_module_accountability_automation_v1",
+      "digest": "dd213ebc53224b54c3424148b58f4af0"
+    },
+    {
+      "version": "20260920231359",
+      "name": "vericlaim_immutable_normalized_snapshots_v1",
+      "digest": "35e36501069fc567b59f18d534e8e236"
+    },
+    {
+      "version": "20260920231650",
+      "name": "vericlaim_remaining_report_types_v1",
+      "digest": "c3582e35305c7472ac411dcde3e6b602"
+    },
+    {
+      "version": "20260920232234",
+      "name": "billing_finalisation_claim_readiness_v1",
+      "digest": "e51d7690c30b360f6afc7450f1606e74"
+    },
+    {
+      "version": "20260920232250",
+      "name": "revenue_liability_safety_automation_v1",
+      "digest": "0093d43124e2ec6702fc7f78b4bf9795"
+    },
+    {
+      "version": "20260920232714",
+      "name": "crm_identity_safety_v1",
+      "digest": "8cd26eb8e9f2f726c86bda6dc260a204"
+    },
+    {
+      "version": "20260920232753",
+      "name": "billing_receipt_allocation_claim_preparation_v1",
+      "digest": "422e461cae07cfd88754e7b9a54e861d"
+    },
+    {
+      "version": "20260920232842",
+      "name": "crm_scheme_membership_vault_v1",
+      "digest": "9c5a02863abdc3f6b21fd3bdbcf82af2"
+    },
+    {
+      "version": "20260920233101",
+      "name": "era_manual_match_controls_v1",
+      "digest": "e40369652dd0cf235a726e346ec9a149"
+    },
+    {
+      "version": "20260921012649",
+      "name": "crm_latest_fk_index_hardening_v1",
+      "digest": "ca41bfaf587391b7aa99f7b8cb5f8ae8"
+    },
+    {
+      "version": "20260921014656",
+      "name": "practicectrl_readiness_rpc_v1",
+      "digest": "bbc80a4d6c47b8b958682a1a30fa338c"
+    },
+    {
+      "version": "20260921014842",
+      "name": "workflow_atomic_actions_v1",
+      "digest": "43a6f060f2864baded5202b790af446a"
+    },
+    {
+      "version": "20260921015039",
+      "name": "communication_dispatch_governance_v1",
+      "digest": "9ff6b6a97802153268527c4eeebf54d6"
+    },
+    {
+      "version": "20260921015127",
+      "name": "crm_intake_followup_v1",
+      "digest": "6aea36f6d34e49c2d217d1a5c2db204e"
+    },
+    {
+      "version": "20260921015211",
+      "name": "operations_self_assignment_v1",
+      "digest": "a914d399bd11e8df98a12103c3912ef8"
+    },
+    {
+      "version": "20260921015356",
+      "name": "billing_draft_line_controls_v1",
+      "digest": "223478013fd639a78f58056a01995f2d"
+    },
+    {
+      "version": "20260921015647",
+      "name": "claim_submission_readiness_v1",
+      "digest": "0cf7c2cd6bfc11388f332bb2641f539e"
+    },
+    {
+      "version": "20260921020523",
+      "name": "practice_encounter_anchor_v1",
+      "digest": "bc7720f5d672f597adb373a509886e1a"
+    },
+    {
+      "version": "20260921020820",
+      "name": "operational_analytics_v2",
+      "digest": "aec3b90be161efb3f7ed19f72f5ee9dd"
+    },
+    {
+      "version": "20260921051655",
+      "name": "source_release_draft_control_v1",
+      "digest": "d38e67e478a720086c6bb2ec10b96218"
+    },
+    {
+      "version": "20260921051759",
+      "name": "source_release_draft_definer_fix_v1",
+      "digest": "23c97a972118ee3db9387ff27fe553b2"
+    },
+    {
+      "version": "20260921052127",
+      "name": "appointment_audit_atomic_definer_fix_v1",
+      "digest": "17a9b61234959a7ec8a618d96d98fd81"
+    },
+    {
+      "version": "20260921052407",
+      "name": "security_definer_surface_elimination_v1",
+      "digest": "2d41d11742ba2314a0a3c92a0d4c22c9"
+    },
+    {
+      "version": "20260921053002",
+      "name": "encounter_documentation_readiness_v1",
+      "digest": "c93febb1f400a132b54150485903171b"
+    },
+    {
+      "version": "20260921053200",
+      "name": "encounter_documentation_fk_index_v1",
+      "digest": "116aca04c0874599136fcaa3ba0c1a83"
+    },
+    {
+      "version": "20260921053238",
+      "name": "encounter_handoff_accountability_v1",
+      "digest": "1f7c39ae2500c38817e8f85832331d1b"
+    },
+    {
+      "version": "20260921053443",
+      "name": "encounter_billing_path_v1",
+      "digest": "76b6f0c49fa0640d4f3afa916a703c91"
+    },
+    {
+      "version": "20260921204808",
+      "name": "source_governance_hardening_v013",
+      "digest": "479309bb0c49bad391affa05fea42cdb"
+    },
+    {
+      "version": "20260921205037",
+      "name": "claim_route_accreditation_hardening_v013",
+      "digest": "f090cc06cda789a18b2a9c48eeec77b2"
+    },
+    {
+      "version": "20260921205458",
+      "name": "bootstrap_acceptance_hardening_v013",
+      "digest": "962992f976e40a4cae67bc8ca2c4bb26"
+    },
+    {
+      "version": "20260921205636",
+      "name": "source_governance_duplicate_index_cleanup_v013",
+      "digest": "0ae99298c1ab6cf5e77c8848a8c0ea14"
+    },
+    {
+      "version": "20260921214251",
+      "name": "multitenant_foundation_v014",
+      "digest": "6aee949150faddbdb5ab5464ad7112e6"
+    },
+    {
+      "version": "20260921214536",
+      "name": "multitenant_invitee_practice_visibility_v014",
+      "digest": "9ba991c22bc09e16183d9b509d3baae1"
+    },
+    {
+      "version": "20260921214723",
+      "name": "multitenant_platform_source_visibility_v014",
+      "digest": "7f657392afe8c2dc46abc3175449439d"
+    },
+    {
+      "version": "20260921215924",
+      "name": "multitenant_policy_performance_hardening_v014",
+      "digest": "7186a8b2018f8a70c0530dcbf98c7003"
+    },
+    {
+      "version": "20260921221626",
+      "name": "clinical_records_schema_v015",
+      "digest": "2b2ec42e6e3cac164875be8f1f375c51"
+    },
+    {
+      "version": "20260921221653",
+      "name": "clinical_records_actions_v015",
+      "digest": "97701ef64ce04e7d091535000b4dda37"
+    },
+    {
+      "version": "20260921221747",
+      "name": "documents_forms_foundation_v015",
+      "digest": "38ecabab64959424f52a86b8b895d8d7"
+    },
+    {
+      "version": "20260921221832",
+      "name": "scheme_authorisations_foundation_v015",
+      "digest": "14abdb0a41b386c7607b5b477eb27ee3"
+    },
+    {
+      "version": "20260921222223",
+      "name": "clinical_authorisation_timeline_fix_v015",
+      "digest": "d914e4a0c5f324ef3ac60fdfcaaf99f1"
+    },
+    {
+      "version": "20260921222315",
+      "name": "timeline_clinical_authorisation_types_v015",
+      "digest": "577e3cc09f746c006a2b570de3d65ef7"
+    },
+    {
+      "version": "20260921222339",
+      "name": "scheme_membership_data_api_grant_v015",
+      "digest": "48b09ca0a8313fbac525e9ad0b280035"
+    },
+    {
+      "version": "20260921222442",
+      "name": "clinical_documents_authorisations_fk_indexes_v015",
+      "digest": "2e16415375a4340f16baaa4ac3b50db7"
+    },
+    {
+      "version": "20260921222603",
+      "name": "clinical_signature_authorisation_claim_gate_v015",
+      "digest": "a9b9b9949d5c7f1b561429fc7750d6fa"
+    },
+    {
+      "version": "20260921222651",
+      "name": "clinical_note_code10_bridge_v015",
+      "digest": "599e163bad82bf6d156fc184b15a160a"
+    },
+    {
+      "version": "20260921223824",
+      "name": "billing_revenue_accounts_quotes_v016",
+      "digest": "f41a30e3774742290d9c34e731286947"
+    },
+    {
+      "version": "20260921224013",
+      "name": "billing_revenue_ledger_statements_v016",
+      "digest": "d694ff30f55c0235a109e0a5806d2d08"
+    },
+    {
+      "version": "20260921224439",
+      "name": "billing_revenue_governed_documents_v016",
+      "digest": "c39e26e3682c68c65521e59aec130d23"
+    },
+    {
+      "version": "20260921224735",
+      "name": "billing_revenue_payments_credits_statements_v016",
+      "digest": "6e99495e17f763e95667fca7181b6145"
+    },
+    {
+      "version": "20260921224838",
+      "name": "billing_core_explicit_data_api_grants_v016",
+      "digest": "33292f91adc00562206767271ffce6f1"
+    },
+    {
+      "version": "20260921225015",
+      "name": "billing_receipt_locking_rls_v016",
+      "digest": "246c3eca9041db2f1a955831a57eb266"
+    },
+    {
+      "version": "20260921225042",
+      "name": "billing_allocation_event_rls_v016",
+      "digest": "b35b202cbbed3a1c8724297b18d42854"
+    },
+    {
+      "version": "20260921225134",
+      "name": "billing_invoice_event_vocabulary_v016",
+      "digest": "10d11bbbde474403c0484ef05c129592"
+    },
+    {
+      "version": "20260921225448",
+      "name": "governed_action_flag_reset_v016",
+      "digest": "148365556d4ec767e674e3ed1dd808ad"
+    },
+    {
+      "version": "20260921225602",
+      "name": "billing_revenue_policy_index_cleanup_v016",
+      "digest": "0f3bf6d13af7376110e405df92460e57"
+    },
+    {
+      "version": "20260921225708",
+      "name": "billing_clinical_linkage_ageing_v016",
+      "digest": "00517e9680ac48c9d2ef00cf18650e5d"
+    },
+    {
+      "version": "20260921230110",
+      "name": "billing_receipt_snapshots_scheme_accounts_v016",
+      "digest": "9609d57cbe3129b6a35f7727728d78fe"
+    },
+    {
+      "version": "20260921230812",
+      "name": "billing_document_allocation_integrity_v016",
+      "digest": "7a44eb58d30d0653bdbbeca0355d3a2f"
+    },
+    {
+      "version": "20260921230958",
+      "name": "billing_governed_creation_legacy_wrappers_v016",
+      "digest": "bae794b49374a1e5b5e1383f79be7401"
+    },
+    {
+      "version": "20260921231412",
+      "name": "billing_document_footer_module_v016",
+      "digest": "370d014759d2c3f72ebf23fac8a8dc8a"
+    },
+    {
+      "version": "20260922062326",
+      "name": "billing_data_api_rpc_boundary_v016",
+      "digest": "6c2dcb090b0ad8c80e4c9b631f0f6904"
+    },
+    {
+      "version": "20260922062349",
+      "name": "billing_data_api_policy_perf_cleanup_v016",
+      "digest": "252a5837c84bc3fc0417499975f57572"
+    },
+    {
+      "version": "20260922090916",
+      "name": "appointment_practice_flow_foundation_v017",
+      "digest": "64518badd9d65f9c128ae57fb9316caf"
+    },
+    {
+      "version": "20260922090944",
+      "name": "appointment_sequence_rls_fix_v017",
+      "digest": "3728696d6267160006c2c877dd152eed"
+    },
+    {
+      "version": "20260922091008",
+      "name": "appointment_request_event_grant_v017",
+      "digest": "4a6d62ace926e53c122f8695318616da"
+    },
+    {
+      "version": "20260922091043",
+      "name": "appointment_request_conversion_event_fix_v017",
+      "digest": "020e87c5978f33e79622a346d0373e5f"
+    },
+    {
+      "version": "20260922091123",
+      "name": "appointment_policy_performance_hardening_v017",
+      "digest": "afd7f7fa4bf35beae44ed9bcfa0f5b5c"
+    },
+    {
+      "version": "20260922091303",
+      "name": "appointment_availability_enforcement_v017",
+      "digest": "ab651a93093ec87ae3fc56b0791a3a8e"
+    },
+    {
+      "version": "20260922092428",
+      "name": "patient_intake_foundation_v018",
+      "digest": "f417a5536e5e6f128a012e088d557635"
+    },
+    {
+      "version": "20260922092443",
+      "name": "patient_intake_issue_rpc_v018",
+      "digest": "d9ad667cb5d1e41f90d416f3f0f037c0"
+    },
+    {
+      "version": "20260922092504",
+      "name": "patient_intake_token_resolution_v018",
+      "digest": "3087a14c879f3be7a1178121bd04b2e7"
+    },
+    {
+      "version": "20260922092745",
+      "name": "patient_intake_policy_performance_v018",
+      "digest": "49c8f890d45993ca83b3e5095235f157"
+    },
+    {
+      "version": "20260922092752",
+      "name": "patient_intake_consent_documents_v018",
+      "digest": "ab0325e69b76e4f44cfbcedfed5ebae2"
+    },
+    {
+      "version": "20260922092757",
+      "name": "patient_intake_consent_document_uniqueness_v018",
+      "digest": "3d1f2a1a1e9e4a340bab422e362e0735"
+    },
+    {
+      "version": "20260922094513",
+      "name": "patient_intake_reception_promotion_v018",
+      "digest": "a45d605cb60b2d0514bb3eec652f6496"
+    },
+    {
+      "version": "20260922094523",
+      "name": "patient_intake_appointment_status_v018",
+      "digest": "82b0d4d0bec9e54848d6011382cc8f8e"
+    },
+    {
+      "version": "20260922094902",
+      "name": "patient_intake_documents_v018",
+      "digest": "e7ad46984a64c99bb6bb0e6367e7cae6"
+    },
+    {
+      "version": "20260922095220",
+      "name": "patient_intake_document_promotion_v018",
+      "digest": "9c4fe2532f93af918be9ac35bef734c6"
+    },
+    {
+      "version": "20260922095232",
+      "name": "patient_intake_apply_documents_v018",
+      "digest": "7e51e23213068229d0b816dace4c9960"
+    },
+    {
+      "version": "20260922100133",
+      "name": "revenue_integrity_engine_v019",
+      "digest": "fb736132514dbb2d6272d5522a0942f9"
+    },
+    {
+      "version": "20260922100318",
+      "name": "revenue_integrity_work_queue_v019",
+      "digest": "55f28559c89902df2c8b08ebb54949ca"
+    },
+    {
+      "version": "20260922100617",
+      "name": "revenue_integrity_claim_gate_v019",
+      "digest": "335e313ad7482afbd48496021bed023e"
+    },
+    {
+      "version": "20260922101622",
+      "name": "revenue_integrity_work_queue_status_fix_v019",
+      "digest": "2730b6611f2f862ee014c575fbe0237c"
+    },
+    {
+      "version": "20260922102705",
+      "name": "scheme_membership_verification_workflow_v019",
+      "digest": "fa825d52bac7ada3fe6d3e7ec303e0a9"
+    },
+    {
+      "version": "20260922102820",
+      "name": "scheme_verification_evidence_and_intake_document_status_fix_v019",
+      "digest": "eea9b9e287aa1fbf745dee0e73d4f2e6"
+    },
+    {
+      "version": "20260922103205",
+      "name": "scheme_verification_private_write_path_v019",
+      "digest": "2660a66eaad375b2b75c4c4e89029f7e"
+    },
+    {
+      "version": "20260922103628",
+      "name": "patient_intake_reconciliation_identity_v019",
+      "digest": "e9a090b8a4a5d5a03093decb636135d3"
+    },
+    {
+      "version": "20260922103649",
+      "name": "patient_intake_merge_apply_scheme_master_v019",
+      "digest": "07fe8b2fa7c72d5b9aefda2a1cf57e1f"
+    },
+    {
+      "version": "20260922104726",
+      "name": "payer_contract_index_hardening_v020",
+      "digest": "e8303106ca0eccfd4f2b42fd75b8eee5"
+    },
+    {
+      "version": "20260922105008",
+      "name": "payer_variance_review_workflow_v020",
+      "digest": "69a4d2e59e3335ec2fbde3bc87b39ebd"
+    },
+    {
+      "version": "20260922111219",
+      "name": "payer_contract_review_lifecycle_v021",
+      "digest": "0ae560523fa36ac493f9faef9f67916d"
+    },
+    {
+      "version": "20260922111557",
+      "name": "payer_contract_audit_timeline_v021",
+      "digest": "0cd4dff38cc776752018367dab5f9553"
+    },
+    {
+      "version": "20260922115153",
+      "name": "automated_payer_resolution_and_claim_preflight_v022",
+      "digest": "b2140d0f2dd71cf031a49d6617db4d42"
+    },
+    {
+      "version": "20260922115211",
+      "name": "invoice_finalisation_preflight_gate_v022",
+      "digest": "e969c70f71f921c57a1158739dcab0d1"
+    },
+    {
+      "version": "20260922115253",
+      "name": "claim_contract_submission_gate_v022",
+      "digest": "35bd41f2d4f7a9fde0f28740162d91db"
+    },
+    {
+      "version": "20260922164201",
+      "name": "production_candidate_readiness_v026",
+      "digest": "e0607cd14f316ca64673b6f250474452"
+    },
+    {
+      "version": "20260922164215",
+      "name": "production_candidate_fk_indexes_v026",
+      "digest": "1f401527bae6eba84d78cb44e83e2299"
+    },
+    {
+      "version": "20260922171831",
+      "name": "staging_release_probe_v027",
+      "digest": "ee5f2bebbdae950c418d478b9bbe45ec"
+    },
+    {
+      "version": "20260922172419",
+      "name": "release_readiness_probe_gate_v027",
+      "digest": "43dbd93473db467bf28f1b3c04dffb5e"
+    },
+    {
+      "version": "20260922182021",
+      "name": "analytics_command_centre_v028",
+      "digest": "03f50f8f4adf0250021657206094295a"
+    },
+    {
+      "version": "20260922184815",
+      "name": "communications_automation_v029",
+      "digest": "bd3e5574e04367a5b7107ad6000c2638"
+    },
+    {
+      "version": "20260922193111",
+      "name": "pathology_provider_type_v030",
+      "digest": "add3af45ecfce3226b2a9ccb16426dc1"
+    },
+    {
+      "version": "20260922193125",
+      "name": "pathology_orders_results_v030",
+      "digest": "3e97b92461765494f62f3aab001d2522"
+    },
+    {
+      "version": "20260922193819",
+      "name": "pathology_workflow_hardening_v030",
+      "digest": "15e834d09a8e7d083d8ec5c3035031ab"
+    },
+    {
+      "version": "20260922195730",
+      "name": "pathology_intelligence_safety_v0301",
+      "digest": "3ccf5303ff5f244c988770bb9c8837b0"
+    },
+    {
+      "version": "20260922200145",
+      "name": "pathology_ai_review_hardening_v0301",
+      "digest": "c192eb8a4b15b22f671609c18e557af5"
+    },
+    {
+      "version": "20260922200619",
+      "name": "pathology_intelligence_safety_v0301",
+      "digest": "2649e7d30595fd5a96b257244b3abafc"
+    },
+    {
+      "version": "20260922200622",
+      "name": "pathology_ai_review_hardening_v0301",
+      "digest": "c8dd6b788d11999091b9ede6edbdf831"
+    },
+    {
+      "version": "20260922203849",
+      "name": "medicines_intelligence_eprescribing_v031",
+      "digest": "a7a5b1453459979a99c9c8150b26a2e4"
+    },
+    {
+      "version": "20260922203852",
+      "name": "medicines_ai_governance_v031",
+      "digest": "c50db155473686f8e20dde19ff709c71"
+    },
+    {
+      "version": "20260924135955",
+      "name": "pms_diary_source_of_truth_20260924",
+      "digest": "f86c51ef1fea63ef4c54c6935495204b"
+    },
+    {
+      "version": "20260924140151",
+      "name": "pms_diary_policy_tuning_20260924",
+      "digest": "02657a8a1ac1d0ff94dfba3eb669e3c1"
+    },
+    {
+      "version": "20260924152752",
+      "name": "finance_read_access_alignment_v034",
+      "digest": "82f60f33dbc3b1efdf791f9645e0c625"
+    }
+  ]
+}

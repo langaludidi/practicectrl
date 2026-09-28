@@ -1,0 +1,14 @@
+create index if not exists clinical_note_patient_idx on public.clinical_note(patient_id);
+create index if not exists clinical_note_signed_by_idx on public.clinical_note(signed_by) where signed_by is not null;
+create index if not exists clinical_note_diagnosis_created_by_idx on public.clinical_note_diagnosis(created_by);
+create index if not exists clinical_observation_patient_only_idx on public.clinical_observation(patient_id);
+create index if not exists document_template_created_by_idx on public.document_template(created_by) where created_by is not null;
+create index if not exists form_response_patient_only_idx on public.form_response(patient_id);
+create index if not exists form_response_signed_by_idx on public.form_response(signed_by) where signed_by is not null;
+create index if not exists form_response_submitted_by_idx on public.form_response(submitted_by) where submitted_by is not null;
+create index if not exists patient_consent_patient_only_idx on public.patient_consent(patient_id);
+create index if not exists patient_document_patient_only_idx on public.patient_document(patient_id);
+create index if not exists patient_document_signed_by_idx on public.patient_document(signed_by) where signed_by is not null;
+create index if not exists scheme_authorisation_option_idx on public.scheme_authorisation(medical_scheme_option_id) where medical_scheme_option_id is not null;
+create index if not exists scheme_authorisation_patient_only_idx on public.scheme_authorisation(patient_id);
+create index if not exists scheme_authorisation_updated_by_idx on public.scheme_authorisation(updated_by) where updated_by is not null;

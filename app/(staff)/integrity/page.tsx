@@ -1,7 +1,7 @@
 import { RevenueIntegrityWorkspace } from "@/components/revenue/RevenueIntegrityWorkspace";
 import { SectionHeader } from "@/components/SectionHeader";
 import { requireStaffContext } from "@/lib/auth/server";
-import { canViewRevenue } from "@/lib/auth/roles";
+import { canManageBilling, canViewRevenue } from "@/lib/auth/roles";
 import { createClient } from "@/lib/supabase/server";
 import { money } from "@/lib/format";
 
@@ -19,7 +19,7 @@ export default async function RevenueIntegrityPage(){
     <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
       <Metric label="Blocked" value={String(blocked.length)} tone="risk"/><Metric label="Needs review" value={String(review.length)}/><Metric label="Ready" value={String(ready.length)} tone="good"/><Metric label="Scheme exposure at risk" value={money(exposure)} tone="risk"/><Metric label="Outstanding on blocked invoices" value={money(outstanding)}/>
     </section>
-    <RevenueIntegrityWorkspace rows={rows as any} claims={(claims||[]) as any}/>
+    <RevenueIntegrityWorkspace rows={rows as any} claims={(claims||[]) as any} canManage={canManageBilling(staff.role)}/>
   </div>;
 }
 

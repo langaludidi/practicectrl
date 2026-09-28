@@ -15,19 +15,20 @@ export function SignInForm() {
     setBusy(true);
     setError(null);
     const form = new FormData(event.currentTarget);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email: String(form.get("email") ?? ""),
-      password: String(form.get("password") ?? ""),
-    });
-    if (error) {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({
+        email: String(form.get("email") ?? ""),
+        password: String(form.get("password") ?? ""),
+      });
+      if (error) throw error;
+      router.replace("/select-practice");
+      router.refresh();
+    } catch {
+      setError("Sign-in failed. Check your details and try again.");
+    } finally {
       setBusy(false);
-      return setError("Sign-in failed. Check your details and try again.");
     }
-
-    setBusy(false);
-    router.replace("/select-practice");
-    router.refresh();
   }
 
   return <form onSubmit={submit} className="space-y-5">

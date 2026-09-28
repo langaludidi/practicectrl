@@ -1,0 +1,90 @@
+
+alter table public.patient_intake_session add column if not exists review_decision text check(review_decision is null or review_decision in('create_new','update_existing'));
+alter table public.patient_intake_session add column if not exists review_notes text;
+alter table public.practice_appointment add column if not exists registration_status text not null default 'not_required' check(registration_status in('not_required','invited','in_progress','submitted','verified'));
+alter table public.practice_appointment add column if not exists registration_verified_at timestamptz;
+
+create or replace function public.review_patient_intake_match(p_intake_id uuid,p_candidate_id uuid,p_decision text,p_notes text default null)
+returns void language plpgsql security invoker set search_path=public,pg_temp as $$
+declare v_user uuid:=(select auth.uid()); v_practice uuid; v_patient uuid;
+begin
+ if v_user is null or coalesce((select auth.jwt()->>'aal'),'')<>'aal2' then raise exception 'AAL2 authentication required'; end if;
+ select practice_id into v_practice from public.patient_intake_session where id=p_intake_id and status in('submitted','validation_required','under_review') for update;
+ if not found then raise exception 'Submitted intake not found'; end if;
+ if not exists(select 1 from public.practice_staff_member m where m.user_id=v_user and m.practice_id=v_practice and m.active and m.role in('reception','practice_manager','clinical_admin','system_admin')) then raise exception 'Patient intake review role required'; end if;
+ if p_decision not in('confirmed_match','not_match','dismissed') then raise exception 'Invalid match decision'; end if;
+ select patient_id into v_patient from public.patient_intake_match_candidate where id=p_candidate_id and intake_session_id=p_intake_id for update;
+ if not found then raise exception 'Match candidate not found'; end if;
+ update public.patient_intake_match_candidate set status=p_decision,reviewed_by=v_user,reviewed_at=now() where id=p_candidate_id;
+ if p_decision='confirmed_match' then
+   update public.patient_intake_match_candidate set status='dismissed',reviewed_by=v_user,reviewed_at=now() where intake_session_id=p_intake_id and id<>p_candidate_id and status='pending';
+   update public.patient_intake_session set existing_patient_id=v_patient,status='under_review',review_decision='update_existing',review_notes=p_notes,reviewed_by=v_user,reviewed_at=now(),updated_at=now() where id=p_intake_id;
+ else
+   update public.patient_intake_session set status='under_review',review_notes=coalesce(p_notes,review_notes),reviewed_by=v_user,reviewed_at=now(),updated_at=now() where id=p_intake_id;
+ end if;
+ insert into public.patient_intake_event(intake_session_id,event_type,actor_type,actor_user_id,metadata) values(p_intake_id,'match_reviewed','staff',v_user,jsonb_build_object('candidate_id',p_candidate_id,'patient_id',v_patient,'decision',p_decision,'notes',p_notes));
+end $$;
+
+create or replace function public.apply_patient_intake(p_intake_id uuid,p_mode text,p_patient_id uuid default null,p_notes text default null)
+returns uuid language plpgsql security invoker set search_path=public,vault,pg_temp as $$
+declare
+ v_user uuid:=(select auth.uid()); s public.patient_intake_session%rowtype; d jsonb; p jsonb; c jsonb; f jsonb; a jsonb; e jsonb; pref jsonb; v_patient uuid; v_scheme uuid; v_option uuid; v_membership uuid; v_name text; v_consent record;
+begin
+ if v_user is null or coalesce((select auth.jwt()->>'aal'),'')<>'aal2' then raise exception 'AAL2 authentication required'; end if;
+ select * into s from public.patient_intake_session where id=p_intake_id for update;
+ if not found or s.status not in('submitted','validation_required','under_review','verified') then raise exception 'Submitted intake not available for application'; end if;
+ if not exists(select 1 from public.practice_staff_member m where m.user_id=v_user and m.practice_id=s.practice_id and m.active and m.role in('reception','practice_manager','clinical_admin','system_admin')) then raise exception 'Patient intake review role required'; end if;
+ if p_mode not in('create_new','update_existing') then raise exception 'Invalid application mode'; end if;
+ d:=s.submitted_json; p:=coalesce(d->'patient','{}'); c:=coalesce(d->'contact','{}'); f:=coalesce(d->'funding','{}'); a:=coalesce(d->'address','{}'); e:=coalesce(d->'emergency_contact','{}'); pref:=coalesce(d->'communication_preferences','{}');
+ v_name:=trim(concat_ws(' ',nullif(trim(p->>'first_name'),''),nullif(trim(p->>'last_name'),'')));
+ if length(v_name)<2 or nullif(p->>'date_of_birth','') is null then raise exception 'Patient identity fields are incomplete'; end if;
+ if p_mode='update_existing' then
+   v_patient:=coalesce(p_patient_id,s.existing_patient_id);
+   if v_patient is null or not exists(select 1 from public.crm_patient x where x.id=v_patient and x.practice_id=s.practice_id) then raise exception 'Existing patient not found in selected practice'; end if;
+   update public.crm_patient set first_name=nullif(trim(p->>'first_name'),''),last_name=nullif(trim(p->>'last_name'),''),display_name=v_name,date_of_birth=(p->>'date_of_birth')::date,primary_phone=nullif(trim(c->>'mobile'),''),primary_email=nullif(trim(c->>'email'),''),data_quality_status='reviewed',updated_by=v_user,updated_at=now() where id=v_patient;
+ else
+   if exists(select 1 from public.patient_intake_match_candidate mc where mc.intake_session_id=p_intake_id and mc.status='confirmed_match') then raise exception 'A confirmed existing-patient match prevents creating a duplicate'; end if;
+   v_patient:=gen_random_uuid();
+   insert into public.crm_patient(id,practice_id,source_system,source_patient_ref,first_name,last_name,display_name,date_of_birth,primary_phone,primary_email,status,data_quality_status,created_by,updated_by)
+   values(v_patient,s.practice_id,'PracticeCtrl Intake',p_intake_id::text,nullif(trim(p->>'first_name'),''),nullif(trim(p->>'last_name'),''),v_name,(p->>'date_of_birth')::date,nullif(trim(c->>'mobile'),''),nullif(trim(c->>'email'),''),'active','reviewed',v_user,v_user);
+ end if;
+
+ update public.patient_address set active=false,updated_at=now() where practice_id=s.practice_id and patient_id=v_patient and address_type='physical' and active;
+ if a<>'{}'::jsonb and coalesce(trim(a->>'line1'),'')<>'' then
+  insert into public.patient_address(practice_id,patient_id,address_type,line1,line2,suburb,city,province,postal_code,country_code,created_by)
+  values(s.practice_id,v_patient,'physical',nullif(trim(a->>'line1'),''),nullif(trim(a->>'line2'),''),nullif(trim(a->>'suburb'),''),nullif(trim(a->>'city'),''),nullif(trim(a->>'province'),''),nullif(trim(a->>'postal_code'),''),coalesce(nullif(trim(a->>'country_code'),''),'ZA'),v_user);
+ end if;
+ if coalesce(trim(e->>'full_name'),'')<>'' and coalesce(trim(e->>'phone'),'')<>'' then
+  update public.patient_emergency_contact set active=false,updated_at=now() where practice_id=s.practice_id and patient_id=v_patient and active;
+  insert into public.patient_emergency_contact(practice_id,patient_id,full_name,relationship,phone,email,created_by) values(s.practice_id,v_patient,trim(e->>'full_name'),nullif(trim(e->>'relationship'),''),trim(e->>'phone'),nullif(trim(e->>'email'),''),v_user);
+ end if;
+ insert into public.patient_communication_preference(patient_id,practice_id,preferred_channel,appointment_reminders,account_notifications,clinical_notifications,results_notifications,marketing_messages,updated_by)
+ values(v_patient,s.practice_id,nullif(trim(pref->>'preferred_channel'),''),coalesce((pref->>'appointment_reminders')::boolean,true),coalesce((pref->>'account_notifications')::boolean,true),coalesce((pref->>'clinical_notifications')::boolean,true),coalesce((pref->>'results_notifications')::boolean,true),coalesce((pref->>'marketing_messages')::boolean,false),v_user)
+ on conflict(patient_id) do update set preferred_channel=excluded.preferred_channel,appointment_reminders=excluded.appointment_reminders,account_notifications=excluded.account_notifications,clinical_notifications=excluded.clinical_notifications,results_notifications=excluded.results_notifications,marketing_messages=excluded.marketing_messages,updated_by=v_user,updated_at=now();
+
+ if f->>'type'='medical_scheme' then
+   select id into v_scheme from public.medical_scheme where lower(name)=lower(trim(f->>'scheme_name')) order by last_verified_at desc nulls last limit 1;
+   if v_scheme is not null and coalesce(trim(f->>'option_name'),'')<>'' then select id into v_option from public.medical_scheme_option where medical_scheme_id=v_scheme and lower(option_name)=lower(trim(f->>'option_name')) order by benefit_year desc limit 1; end if;
+   v_membership:=public.upsert_patient_scheme_membership(null,s.practice_id,v_patient,trim(f->>'scheme_name'),nullif(trim(f->>'option_name'),''),trim(f->>'member_number'),nullif(trim(f->>'dependant_code'),''),v_scheme,v_option,'PracticeCtrl Intake',p_intake_id::text,v_user);
+ end if;
+
+ for v_consent in select * from public.patient_intake_consent_acceptance where intake_session_id=p_intake_id and status='accepted' loop
+   if not exists(select 1 from public.patient_consent pc where pc.practice_id=s.practice_id and pc.patient_id=v_patient and pc.consent_type=v_consent.consent_key and pc.consent_scope='intake:'||v_consent.document_version and pc.status='granted') then
+     insert into public.patient_consent(practice_id,patient_id,consent_type,consent_scope,status,granted_at,effective_from,recorded_by) values(s.practice_id,v_patient,v_consent.consent_key,'intake:'||v_consent.document_version,'granted',coalesce(v_consent.accepted_at,now()),current_date,v_user);
+   end if;
+ end loop;
+
+ update public.patient_intake_session set status='applied',review_decision=p_mode,review_notes=p_notes,reviewed_by=v_user,reviewed_at=coalesce(reviewed_at,now()),applied_patient_id=v_patient,applied_at=now(),token_hash=null,token_expires_at=null,updated_at=now() where id=p_intake_id;
+ if s.appointment_id is not null then
+   update public.practice_appointment set patient_id=v_patient,registration_status='verified',registration_verified_at=now(),updated_by=v_user,updated_at=now() where id=s.appointment_id and practice_id=s.practice_id;
+ end if;
+ insert into public.patient_intake_event(intake_session_id,event_type,actor_type,actor_user_id,metadata) values(p_intake_id,'applied','staff',v_user,jsonb_build_object('mode',p_mode,'patient_id',v_patient,'scheme_membership_id',v_membership,'notes',p_notes));
+ return v_patient;
+end $$;
+
+revoke all on function public.review_patient_intake_match(uuid,uuid,text,text) from public,anon;
+revoke all on function public.apply_patient_intake(uuid,text,uuid,text) from public,anon;
+grant execute on function public.review_patient_intake_match(uuid,uuid,text,text),public.apply_patient_intake(uuid,text,uuid,text) to authenticated;
+
+create index if not exists practice_appointment_registration_idx on public.practice_appointment(practice_id,registration_status,starts_at);
+

@@ -12,7 +12,7 @@ type Enrolment = {
   secret: string;
 };
 
-export function MfaGate({ email }: { email: string | null }) {
+export function MfaGate({ email, destination = "/dashboard" }: { email: string | null; destination?: "/dashboard" | "/platform/tenants" }) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("loading");
   const [enrolment, setEnrolment] = useState<Enrolment | null>(null);
@@ -27,7 +27,7 @@ export function MfaGate({ email }: { email: string | null }) {
 
     if (data.currentLevel === "aal2") {
       setMode("ready");
-      router.replace("/dashboard");
+      router.replace(destination);
       router.refresh();
       return;
     }
@@ -113,7 +113,7 @@ export function MfaGate({ email }: { email: string | null }) {
       if (verify.error) throw verify.error;
       await supabase.auth.refreshSession();
       setMode("ready");
-      router.replace("/dashboard");
+      router.replace(destination);
       router.refresh();
     } catch {
       setError("That code was not accepted. Check your authenticator app and try again.");
@@ -147,7 +147,7 @@ export function MfaGate({ email }: { email: string | null }) {
           />
         </label>
         {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
-        <button disabled={busy || code.length < 6} className="w-full rounded-xl bg-[#4a1f3e] px-4 py-3 font-semibold text-white disabled:opacity-60">
+        <button disabled={busy || code.length < 6} className="w-full rounded-xl bg-[#067c80] px-4 py-3 font-semibold text-white disabled:opacity-60">
           {busy ? "Verifying…" : "Verify and continue"}
         </button>
       </form>
@@ -164,13 +164,13 @@ export function MfaGate({ email }: { email: string | null }) {
       </div>
 
       {!enrolment ? (
-        <button onClick={startEnrollment} disabled={busy} className="w-full rounded-xl bg-[#4a1f3e] px-4 py-3 font-semibold text-white disabled:opacity-60">
+        <button onClick={startEnrollment} disabled={busy} className="w-full rounded-xl bg-[#067c80] px-4 py-3 font-semibold text-white disabled:opacity-60">
           {busy ? "Starting setup…" : "Set up authenticator app"}
         </button>
       ) : (
         <form onSubmit={verifyEnrollment} className="space-y-4">
           <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-            <p className="mb-3 text-sm font-semibold text-[#4a1f3e]">1. Scan this QR code</p>
+            <p className="mb-3 text-sm font-semibold text-[#051a39]">1. Scan this QR code</p>
             <img src={enrolment.qrCode} alt="Authenticator enrollment QR code" className="mx-auto max-w-[220px] rounded-lg bg-white p-2" />
             <details className="mt-3 text-xs text-stone-600">
               <summary className="cursor-pointer font-medium">Can’t scan the QR code?</summary>
@@ -189,7 +189,7 @@ export function MfaGate({ email }: { email: string | null }) {
             />
           </label>
           {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
-          <button disabled={busy || code.length < 6} className="w-full rounded-xl bg-[#4a1f3e] px-4 py-3 font-semibold text-white disabled:opacity-60">
+          <button disabled={busy || code.length < 6} className="w-full rounded-xl bg-[#067c80] px-4 py-3 font-semibold text-white disabled:opacity-60">
             {busy ? "Enabling MFA…" : "Enable MFA and continue"}
           </button>
         </form>
