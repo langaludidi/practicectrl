@@ -71,3 +71,36 @@ Still required:
 - remittance/adjudication integration and variance creation.
 
 Production promotion remains blocked until those gates and the wider role/privacy UAT are complete.
+
+
+## Full claim-preflight verification
+
+A second rollback-only fixture now exercises the complete draft claim-preflight path with synthetic governed source data.
+
+Verified:
+
+- synthetic licensed SAMA CCSA dataset with version, licence reference, governed source file and SHA-256 provenance;
+- active code reference;
+- patient-linked invoice;
+- active verified scheme membership;
+- active payer contract and tariff rule;
+- claim-eligible clinical line creation;
+- automatic payer resolution;
+- full `run_invoice_claim_preflight(..., true)` execution;
+- ready state with zero blockers;
+- persisted expected scheme amount of R1,146;
+- persisted estimated patient liability of R304;
+- preserved rule/contract provenance;
+- pre-flight validation audit event.
+
+During this test a further recovered migration gap was found: `run_invoice_claim_preflight` called a missing `evaluate_payer_contract_requirements(...)` routine. The routine has now been recovered as a governed, tenant-aware evaluator for active authorisation, referral, modifier, exclusion, submission-window and balance-billing rules.
+
+The full synthetic pre-flight fixture now passes and rolls back cleanly.
+
+### Remaining claim release gates
+
+- negative-path tests for missing membership, required authorisation/referral and expired submission window;
+- claim preparation from a ready invoice;
+- claim-level contract assessment;
+- role and cross-tenant negative tests;
+- controlled staging UAT with real licensed/reference data before production.
